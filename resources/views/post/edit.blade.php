@@ -1,3 +1,8 @@
+<style>
+    span.select2-selection.select2-selection--multiple {
+        width: 71em !important;
+    }
+</style>
 <form id="post_update_form">
     @csrf
     <input type="hidden" id="id" name="id" value="{{$post->id}}">
@@ -19,10 +24,12 @@
     <div class="form-group row">
         <label for="example-text-input" class="col-md-2 col-form-label">Category*</label>
         <div class="col-md-10">
-            <select class="form-control" name="category" id="category" required>
-                <option value="" selected disabled>Select Category</option>
+            @php
+                $cat_explode = explode(',',$post->category_id);
+            @endphp
+            <select class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select a Category" name="category[]" id="category" required>
                 @foreach ($category as $cat)
-                    <option @if($post->category_id == $cat->id) selected @endif value="{{$cat->id}}">{{$cat->category}}</option>
+                    <option @if(in_array($cat->id,$cat_explode)) selected @endif value="{{$cat->id}}">{{$cat->category}}</option>
                 @endforeach
             </select>
         </div>
@@ -37,6 +44,12 @@
 
 <script>
     var form = $("#post_update_form");
+
+    $("#category").select2({
+        placeholder: "Select a Category",
+        allowClear: true
+    });
+
     $("#post_update").click(function () {
         if (!form.valid()) { // Not Valid
             return false;

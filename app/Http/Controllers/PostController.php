@@ -11,6 +11,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 use Illuminate\Validation\Rule;
+use Auth;
 
 class PostController extends Controller
 {
@@ -20,7 +21,8 @@ class PostController extends Controller
     public function index()
     {
         try {
-            return view('post.index');
+            $category = Category::withoutTrashed()->orderBy('category','ASC')->get();
+            return view('post.index',compact('category'));
         }
         catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -34,7 +36,7 @@ class PostController extends Controller
     {
         try {
             $category = Category::withoutTrashed()->orderBy('category','ASC')->get();
-            $returnHTML = view('post.create', compact('category'))->render();
+            $returnHTML = view('post.create',compact('category'))->render();
 
             return response()->json(
                 [
@@ -69,10 +71,12 @@ class PostController extends Controller
             }
             else
             {
+                $category = implode(",",$request->input('category'));
                 $post = new Post;
                 $post->title = $request->input('title');
                 $post->content = $request->input('content');
-                $post->category_id = $request->input('category');
+                $post->category_id = $category;
+                $post->user_id = Auth::id();
                 $post->save();
                 $post->id;
 
@@ -93,7 +97,34 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $post = Post::withoutTrashed()->select("posts.*",\DB::raw("GROUP_CONCAT(categories.category) as category"))
+                ->leftjoin("categories",\DB::raw("FIND_IN_SET(categories.id,posts.category_id)"),">",\DB::raw("'0'"))
+                ->where('posts.id',$id)
+                ->groupBy('posts.id')
+                ->first();
+
+            if($post)
+            {
+                $returnHTML = view('post.view',compact('post'))->render();
+
+                return response()->json([
+                        'success' => true,
+                        'html_page' => $returnHTML,
+                    ]
+                );
+            }
+            else
+            {
+                return response()->json([
+                    'status'  => 404,
+                    'message' => 'No Post Found.'
+                ]);
+            }
+        }
+        catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
@@ -149,9 +180,10 @@ class PostController extends Controller
                 $post = Post::find($request->id);
                 if($post)
                 {
+                    $category = implode(",",$request->input('category'));
                     $post->title    = $request->input('title');
                     $post->content  = $request->input('content');
-                    $post->category_id = $request->input('category');
+                    $post->category_id = $category;
                     $post->update();
                     $post->id;
                     
@@ -207,7 +239,7 @@ class PostController extends Controller
 
     public function dashboard(Request $request){
         try {
-            $post_count = Post::count();
+            $post_count = Post::where('user_id',Auth::id())->count();
             return view('post.dashboard',compact('post_count'));
         }
         catch (Exception $e) {
@@ -218,7 +250,12 @@ class PostController extends Controller
     public function post_datatable(Request $request){
         try {
             if ($request->ajax()) {
-                $all_datas = Post::latest()->get();
+                
+                $all_datas = Post::where('user_id',Auth::id())->latest();
+                if(isset($request->category_val)){
+                    $all_datas->whereRaw("find_in_set('" . $request->category_val . "',category_id)");
+                }
+                $all_datas = $all_datas->get();
         
                 return Datatables::of($all_datas)
                     ->addColumn('select_all', function ($all_data) {
@@ -230,6 +267,10 @@ class PostController extends Controller
 
                         return '<div class="">
                             <div class="btn-group mr-2 mb-2 mb-sm-0">
+                                <a href="#!" data-url="'.$view_route.'" data-size="xl" data-ajax-popup="true" data-ajax-popup="true"
+                                    data-bs-original-title="View Post" class="btn btn-primary waves-light waves-effect">
+                                    <i class="fa fa-eye"></i>
+                                </a>
                                 <a href="#!" data-url="'.$edit_route.'" data-size="xl" data-ajax-popup="true" data-ajax-popup="true"
                                     data-bs-original-title="Edit Post" class="btn btn-primary waves-light waves-effect">
                                     <i class="fa fa-edit"></i>

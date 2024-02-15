@@ -1,4 +1,8 @@
-
+<style>
+    span.select2-selection.select2-selection--multiple {
+        width: 71em;
+    }
+</style>
 <form id="post_create_form" class="validation">
     @csrf
     <div class="form-group row">
@@ -18,8 +22,7 @@
     <div class="form-group row">
         <label for="example-text-input" class="col-md-2 col-form-label">Category*</label>
         <div class="col-md-10">
-            <select class="form-control" name="category" id="category" required>
-                <option value="" selected disabled>Select Category</option>
+            <select class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select a Category" name="category[]" id="category" required>
                 @foreach ($category as $cat)
                     <option value="{{$cat->id}}">{{$cat->category}}</option>
                 @endforeach
@@ -35,6 +38,11 @@
 
 <script>
     var form = $("#post_create_form");
+
+    $("#category").select2({
+        placeholder: "Select a Category",
+        allowClear: true
+    });
 
     $("#post_create").click(function () {
         if (!form.valid()) { // Not Valid

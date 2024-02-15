@@ -45,6 +45,18 @@
                             <h4 class="card-title"> </h4>
                             <p class="card-title-desc"></p>
 
+                            <div class="row">
+                                <div class="col-2">
+                                    <select onchange="category_search(this)" name="category" id="category" class="form-control" style="margin-bottom: 20px;">
+                                        <option value="">Select Category</option>
+                                        @foreach ($category as $cat_show)
+                                            <option value="{{$cat_show->id}}">{{$cat_show->category}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <br>
+                            </div>
+                            
                             <table id="myTable" class="table dt-responsive nowrap w-100">
                                 <thead>
                                     <tr>
@@ -83,6 +95,11 @@
         $(document).ready(function() {
             datatable();
         });
+
+        function category_search(get_this){
+            category_val = $(get_this).val();
+            datatable(category_val);
+        }
 
         function table_checkbox(get_this){
             count_checkbox = $(".tabel_checkbox").filter(':checked').length;
@@ -140,7 +157,7 @@
             });
         });
 
-        function datatable(){
+        function datatable(category_val){
             $('#myTable').dataTable().fnDestroy();
             $('#myTable').DataTable({
                 searching: true,
@@ -156,6 +173,7 @@
                     url: "{{ route('post_datatable') }}",
                     data: {
                         _token: tempcsrf,
+                        category_val: category_val
                     },
                     error: function(xhr, error, thrown) {
                         console.log("error",error);
@@ -163,7 +181,12 @@
                 },
                 columns: [
                     { data: 'select_all', name: 'select_all', orderable: false, searchable: false },
-                    { data: 'id', name: '#', orderable: true, searchable: true },
+                    {
+                        "data": "id",
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
                     { data: 'title', name: 'title', orderable: true, searchable: true },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
@@ -176,7 +199,7 @@
             });
         }
 
-        $(document).on('click', '#delete_category', function(e) {
+        $(document).on('click', '#delete_post', function(e) {
             e.preventDefault();
             var id  = $(this).data("id");
             var url = "{{ route('posts.destroy', ':id') }}";

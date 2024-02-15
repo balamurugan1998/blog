@@ -111,6 +111,8 @@
     <script src="{{ asset('assets/js/admin/jquery.validate.js') }}"></script>
     
     <script src="{{ asset('assets/js/admin/common.js') }}"></script>
+
+    <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 @endpush
 
 
