@@ -165,7 +165,9 @@ class PostController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'title'=> ['required',Rule::unique('posts')->ignore($id)]
+                'title'=> ['required',Rule::unique('posts')->ignore($id)],
+                'content'  => 'required',
+                'category' => 'required',
             ]); 
     
             if($validator->fails())

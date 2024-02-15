@@ -27,7 +27,7 @@
             @php
                 $cat_explode = explode(',',$post->category_id);
             @endphp
-            <select class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select a Category" name="category[]" id="category" required>
+            <select class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select a Category" name="category[]" id="category_select" required>
                 @foreach ($category as $cat)
                     <option @if(in_array($cat->id,$cat_explode)) selected @endif value="{{$cat->id}}">{{$cat->category}}</option>
                 @endforeach
@@ -45,7 +45,7 @@
 <script>
     var form = $("#post_update_form");
 
-    $("#category").select2({
+    $("#category_select").select2({
         placeholder: "Select a Category",
         allowClear: true
     });

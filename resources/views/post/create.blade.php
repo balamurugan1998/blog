@@ -22,7 +22,7 @@
     <div class="form-group row">
         <label for="example-text-input" class="col-md-2 col-form-label">Category*</label>
         <div class="col-md-10">
-            <select class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select a Category" name="category[]" id="category" required>
+            <select class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select a Category" name="category[]" id="category_select" required>
                 @foreach ($category as $cat)
                     <option value="{{$cat->id}}">{{$cat->category}}</option>
                 @endforeach
@@ -39,7 +39,7 @@
 <script>
     var form = $("#post_create_form");
 
-    $("#category").select2({
+    $("#category_select").select2({
         placeholder: "Select a Category",
         allowClear: true
     });
