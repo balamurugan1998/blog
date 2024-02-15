@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->text('category_id');
+            $table->integer('category_id')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
