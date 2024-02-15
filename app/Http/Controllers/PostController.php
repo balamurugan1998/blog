@@ -71,12 +71,14 @@ class PostController extends Controller
             }
             else
             {
+                date_default_timezone_set("Asia/Calcutta");
                 $category = implode(",",$request->input('category'));
                 $post = new Post;
                 $post->title = $request->input('title');
                 $post->content = $request->input('content');
                 $post->category_id = $category;
                 $post->user_id = Auth::id();
+                $post->publication_date = date("d-m-Y h:i:s A");
                 $post->save();
                 $post->id;
 

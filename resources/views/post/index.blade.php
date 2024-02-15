@@ -68,6 +68,7 @@
                                         </th>
                                         <th>#</th>
                                         <th>Title</th>
+                                        <th>Publication Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -188,6 +189,7 @@
                         }
                     },
                     { data: 'title', name: 'title', orderable: true, searchable: true },
+                    { data: 'publication_date', name: 'publication_date', orderable: true, searchable: true },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 columnDefs: [
