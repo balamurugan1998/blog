@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('http_requests', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id')->default(NULL);
             $table->string('url');
             $table->string('method');
             $table->ipAddress('ip');

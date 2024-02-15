@@ -14,6 +14,7 @@ class HttpRequest extends Model
     
     protected $fillable = [
         'id',
+        'user_id',
         'url', 
         'method',
         'ip',
